@@ -17,12 +17,15 @@ namespace AgendaE
                 if (con == null)
                     return;
 
-                string query = @"INSERT INTO Contactos
+                /*string query = @"INSERT INTO Contactos
                 (Nombre, Apellido, FechaNacimiento, Direccion, Genero, EstadoCivil, Movil, Telefono, CorreoElectronico)
                 VALUES
                 (@Nombre, @Apellido, @FechaNacimiento, @Direccion, @Genero, @EstadoCivil, @Movil, @Telefono, @Correo)";
 
-                SqlCommand cmd = new SqlCommand(query, con);
+                SqlCommand cmd = new SqlCommand(query, con);*/
+
+                SqlCommand cmd = new SqlCommand("SP_InsertarContacto", con);
+                cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@Nombre", nombre);
                 cmd.Parameters.AddWithValue("@Apellido", apellido);
@@ -47,9 +50,14 @@ namespace AgendaE
                 if (con == null)
                     return tabla;
 
-                string query = "SELECT * FROM Contactos";
+                /*string query = "SELECT * FROM Contactos";
 
                 SqlDataAdapter da = new SqlDataAdapter(query, con);
+                da.Fill(tabla);*/
+
+                SqlDataAdapter da = new SqlDataAdapter("SP_ListaContactos", con);
+                da.SelectCommand.CommandType = CommandType.StoredProcedure;
+
                 da.Fill(tabla);
             }
 
@@ -63,12 +71,18 @@ namespace AgendaE
                 if (con == null)
                     return;
 
-                string query = "DELETE FROM Contactos WHERE Id=@Id";
+               /* string query = "DELETE FROM Contactos WHERE Id=@Id";
 
                 SqlCommand cmd = new SqlCommand(query, con);
                 cmd.Parameters.AddWithValue("@Id", id);
 
+                cmd.ExecuteNonQuery();*/
+               SqlCommand cmd = new SqlCommand("SP_EliminarContacto", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@Id", id);
                 cmd.ExecuteNonQuery();
+
+
             }
         }
 
@@ -81,10 +95,18 @@ namespace AgendaE
                 if (con == null)
                     return tabla;
 
-                string query = "SELECT * FROM Contactos WHERE Nombre LIKE @Nombre";
+                /*string query = "SELECT * FROM Contactos WHERE Nombre LIKE @Nombre";
 
                 SqlCommand cmd = new SqlCommand(query, con);
                 cmd.Parameters.AddWithValue("@Nombre", "%" + nombre + "%");
+
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                da.Fill(tabla);*/
+
+                SqlCommand cmd = new SqlCommand("sp_BuscarContacto", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@Nombre", nombre);
 
                 SqlDataAdapter da = new SqlDataAdapter(cmd);
                 da.Fill(tabla);
@@ -102,7 +124,10 @@ namespace AgendaE
                 if (con == null)
                     return;
 
-                string query = @"UPDATE Contactos SET
+                SqlCommand cmd = new SqlCommand("SP_ModificarContacto", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                /*string query = @"UPDATE Contactos SET
                                 Nombre=@Nombre,
                                 Apellido=@Apellido,
                                 FechaNacimiento=@FechaNacimiento,
@@ -114,7 +139,7 @@ namespace AgendaE
                                 CorreoElectronico=@Correo
                                 WHERE Id=@Id";
 
-                SqlCommand cmd = new SqlCommand(query, con);
+                SqlCommand cmd = new SqlCommand(query, con);*/
 
                 cmd.Parameters.AddWithValue("@Id", id);
                 cmd.Parameters.AddWithValue("@Nombre", nombre);
@@ -128,6 +153,33 @@ namespace AgendaE
                 cmd.Parameters.AddWithValue("@Correo", correo);
 
                 cmd.ExecuteNonQuery();
+            }
+        }
+
+        public string ValidarUsuario(string usuario, string clave)
+        {
+            using (SqlConnection con = conexion.GetConnection())
+            {
+                if (con == null)
+                    return "Error";
+
+                // Buscar usuario
+                string query = "SELECT Clave FROM Usuarios WHERE Usuario=@Usuario";
+
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@Usuario", usuario);
+
+                object result = cmd.ExecuteScalar();
+
+                if (result == null)
+                    return "UsuarioNoExiste";
+
+                string claveBD = result.ToString();
+
+                if (claveBD != clave)
+                    return "ClaveIncorrecta";
+
+                return "OK";
             }
         }
     }

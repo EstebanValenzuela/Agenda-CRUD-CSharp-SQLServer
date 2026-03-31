@@ -16,9 +16,6 @@ namespace AgendaE
         public Form1()
         {
             InitializeComponent();
-            comboBoxGenero.Items.AddRange(new[] { "Masculino", "Femenino", "Otro" });
-            comboBoxEstadoCivil.Items.AddRange(new[] { "Soltero", "Casado", "Divorciado", "Viudo" });
-
             // seleccionar un valor por defecto opcional
             comboBoxGenero.SelectedIndex = 0;
             comboBoxEstadoCivil.SelectedIndex = 0;
@@ -111,6 +108,11 @@ namespace AgendaE
             {
                 MessageBox.Show("Seleccione un contacto para modificar.");
             }
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            dataGridView1.ReadOnly = true;
         }
     }
 }
