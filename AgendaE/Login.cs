@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,14 +23,15 @@ namespace AgendaE
         private void Login_Load(object sender, EventArgs e)
         {
             //button1.Enabled = false; 
-            textBox2.PasswordChar = '*';
-
+            TextBox2.PasswordChar = '*';
+            //this.FormBorderStyle = FormBorderStyle.None;
+            //this.StartPosition = FormStartPosition.CenterScreen;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void button1_Click_1(object sender, EventArgs e)
         {
             // 1️⃣ Validar campos vacíos
-            if (string.IsNullOrEmpty(textBox1.Text) || string.IsNullOrEmpty(textBox2.Text))
+            if (string.IsNullOrEmpty(TextBox1.Text) || string.IsNullOrEmpty(TextBox2.Text))
             {
                 MessageBox.Show("Por favor, ingrese el usuario y la contraseña.", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -37,7 +39,7 @@ namespace AgendaE
             }
 
             // 2️⃣ Validar en la base de datos
-            string resultado = capadao.ValidarUsuario(textBox1.Text, textBox2.Text);
+            string resultado = capadao.ValidarUsuario(TextBox1.Text, TextBox2.Text);
 
             switch (resultado)
             {
@@ -73,11 +75,26 @@ namespace AgendaE
         {
             if (!checkBox1.Checked)
             {
-                textBox2.PasswordChar = '*';
+                TextBox2.PasswordChar = '*';
             }
             else
             {
-                textBox2.PasswordChar = '\0';
+                TextBox2.PasswordChar = '\0';
+            }
+        }
+
+        private void TextBox2_TextChanged(object sender, EventArgs e)
+        {
+            TextBox2.PlaceholderText = "Usuario";
+            TextBox2.BorderRadius = 10;
+        }
+    
+
+        private void textbox2_keydown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                button1.PerformClick();
             }
         }
     }
